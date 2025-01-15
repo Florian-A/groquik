@@ -1,7 +1,8 @@
-
 FROM xrpllabsofficial/xrpld:latest
 
-COPY scripts/generate_keypairs.sh /usr/local/bin/generate_keypairs.sh
-RUN chmod +x /usr/local/bin/generate_keypairs.sh
+RUN apt-get update && apt-get install -y jq 
 
-ENTRYPOINT ["/usr/local/bin/generate_keypairs.sh"]
+COPY scripts/init_rippled.sh /usr/local/bin/init_rippled.sh
+RUN chmod +x /usr/local/bin/init_rippled.sh
+
+ENTRYPOINT ["/usr/local/bin/init_rippled.sh"]
