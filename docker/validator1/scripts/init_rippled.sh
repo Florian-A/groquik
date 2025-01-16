@@ -17,4 +17,10 @@ VALIDATION_PUBLIC_KEY=$(jq -r '.result.validation_public_key' $KEYS_FILE)
 echo "[validators]" > $VALIDATORS_FILE
 echo "$VALIDATION_PUBLIC_KEY" >> $VALIDATORS_FILE
 
-exec $RIPPLED_DIR/bin/rippled "$@" --conf "$CONFIG_DIR/rippled.cfg" 
+#exec $RIPPLED_DIR/bin/rippled "$@" --conf "$CONFIG_DIR/rippled.cfg" 
+#exec $RIPPLED_DIR/bin/rippled "$@"
+
+# waiting indefinitely
+while true; do
+  sleep 1
+done

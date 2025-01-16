@@ -12,3 +12,9 @@ services:
       - ./docker/validator1/config:/config
       # - ./docker/validator1/config/rippled.cfg:/etc/opt/ripple/rippled.cfg
     restart: unless-stopped
+  validator-keys-tool:
+    build:
+      context: ./docker/validator-keys-tool
+    container_name: validator-keys-tool
+    platform: linux/amd64
+    restart: unless-stopped
