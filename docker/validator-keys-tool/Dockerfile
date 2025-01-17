@@ -5,20 +5,31 @@ RUN apt-get update && apt-get install -y \
     cmake \
     git \
     python3 \
-    python3-pip
+    python3-pip \
+    libboost-all-dev \
+    libxxhash-dev
 
 RUN pip3 install --upgrade pip && pip3 install conan
 
+# Clone du projet Ripple
 RUN git clone https://github.com/ripple/validator-keys-tool /app
 
 WORKDIR /app
 RUN mkdir .build
 WORKDIR /app/.build
 
+# Configuration de Conan
 RUN conan profile detect
 RUN conan remote add ripple http://18.143.149.228:8081/artifactory/api/conan/conan-non-prod
-RUN conan install .. --output-folder=. --build=missing
 
+RUN conan install /app --output-folder=. --build=missing
+RUN conan install date/3.0.1 --output-folder=. --build=missing
+#RUN conan install .. --output-folder=. --build=missing
+
+# Installation des dépendances avec Conan
+RUN conan install .. --output-folder=. --build=missing --requires=date/3.0.1
+
+# Compilation avec CMake
 RUN cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW \
     -DCMAKE_TOOLCHAIN_FILE:FILEPATH=conan_toolchain.cmake \
     -DCMAKE_BUILD_TYPE=Release \
@@ -26,5 +37,5 @@ RUN cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW \
 
 RUN cmake --build .
 
-# CMD ["sh", "-c", "./validator-keys --unittest || ctest --test-dir ."]
+# Maintien du conteneur actif
 CMD ["tail", "-f", "/dev/null"]
