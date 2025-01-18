@@ -12,6 +12,7 @@ RUN cp /bin/bash /build/
 # Install prerequisites
 WORKDIR /root
 COPY prerequisites.sh .
+RUN chmod +x prerequisites.sh
 RUN ./prerequisites.sh
 
 # # Make rippled build
