@@ -12,8 +12,6 @@ COPY prerequisites.sh .
 RUN chmod +x prerequisites.sh
 RUN ./prerequisites.sh
 
-RUN mkdir /app
-
 # Make validation keys tool
 WORKDIR /app
 COPY compilation.sh .
