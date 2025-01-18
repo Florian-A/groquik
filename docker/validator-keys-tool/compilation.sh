@@ -15,7 +15,10 @@ cd .build
 # Add the Ripple Conan repository
 conan remote add ripple http://18.143.149.228:8081/artifactory/api/conan/conan-non-prod
 
-# Install dependencies
+# Generate dependencies and CMake toolchain
+conan install .. --output-folder . --build missing
+
+# Configure with CMake
 cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW \
     -DCMAKE_TOOLCHAIN_FILE:FILEPATH=conan_toolchain.cmake \
     -DCMAKE_BUILD_TYPE=Release \
