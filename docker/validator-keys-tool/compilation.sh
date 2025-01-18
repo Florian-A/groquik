@@ -26,3 +26,5 @@ cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW \
 
 # Build the project
 cmake --build . --parallel 8
+
+cp validator-keys-tool /usr/local/bin/validator-keys-tool

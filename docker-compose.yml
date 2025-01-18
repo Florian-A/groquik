@@ -11,10 +11,13 @@ services:
     volumes:
       - ./docker/validator1/config:/config
       #- ./docker/validator1/config/rippled.cfg:/etc/opt/ripple/rippled.cfg
+    depends_on:
+      - validator-keys-tool
     restart: unless-stopped
   validator-keys-tool:
     build:
       context: ./docker/validator-keys-tool
+    image: local-validator-keys-tool:latest  # On donne un nom à l'image
     container_name: validator-keys-tool
     platform: linux/amd64
     restart: unless-stopped
