@@ -1,17 +1,17 @@
 version: '3.8'
 services:
-  validator1:
-    build:
-      context: ./docker/validator1
-    container_name: validator1
-    platform: linux/amd64
-    ports:
-      - "8080:80"
-      - "5005:5005"
-    volumes:
-      - ./docker/validator1/config:/config
-      # - ./docker/validator1/config/rippled.cfg:/etc/opt/ripple/rippled.cfg
-    restart: unless-stopped
+  # validator1:
+  #   build:
+  #     context: ./docker/validator1
+  #   container_name: validator1
+  #   platform: linux/amd64
+  #   ports:
+  #     - "8080:80"
+  #     - "5005:5005"
+  #   volumes:
+  #     - ./docker/validator1/config:/config
+  #     - ./docker/validator1/config/rippled.cfg:/etc/opt/ripple/rippled.cfg
+  #   restart: unless-stopped
   validator-keys-tool:
     build:
       context: ./docker/validator-keys-tool
