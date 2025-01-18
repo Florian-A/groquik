@@ -6,19 +6,18 @@ ENV GCC_VERSION=${GCC_VERSION}
 ARG CONAN_VERSION=1.60.0
 ENV CONAN_VERSION=${CONAN_VERSION}
 
-RUN mkdir /build
-RUN cp /bin/bash /build/
-
 # Install prerequisites
 WORKDIR /root
 COPY prerequisites.sh .
 RUN chmod +x prerequisites.sh
 RUN ./prerequisites.sh
 
-# # Make rippled build
-# WORKDIR /root
-# COPY compilation.sh .
-# RUN ./compilation.sh
+RUN mkdir /app
 
+# Make validation keys tool
+WORKDIR /app
+COPY compilation.sh .
+RUN chmod +x compilation.sh
+RUN ./compilation.sh
 
 CMD ["tail", "-f", "/dev/null"]
