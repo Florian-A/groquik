@@ -7,7 +7,8 @@ RUN apt-get update && apt-get install -y \
     python3 \
     python3-pip \
     libboost-all-dev \
-    libxxhash-dev
+    libxxhash-dev \
+    libdate-dev
 
 RUN pip3 install --upgrade pip && pip3 install conan
 
@@ -23,16 +24,16 @@ RUN conan profile detect
 RUN conan remote add ripple http://18.143.149.228:8081/artifactory/api/conan/conan-non-prod
 
 # Création d'un fichier conanfile.txt temporaire pour date
-RUN echo "[requires]" > /tmp/conanfile.txt && \
-    echo "date/3.0.1" >> /tmp/conanfile.txt && \
-    echo "[generators]" >> /tmp/conanfile.txt && \
-    echo "CMakeDeps" >> /tmp/conanfile.txt && \
-    echo "CMakeToolchain" >> /tmp/conanfile.txt
+# RUN echo "[requires]" > /tmp/conanfile.txt && \
+#     echo "date/3.0.1" >> /tmp/conanfile.txt && \
+#     echo "[generators]" >> /tmp/conanfile.txt && \
+#     echo "CMakeDeps" >> /tmp/conanfile.txt && \
+#     echo "CMakeToolchain" >> /tmp/conanfile.txt
 
 # Installation de date avec son propre conanfile
-RUN conan install /tmp/conanfile.txt \
-    --output-folder=. \
-    --build=missing
+# RUN conan install /tmp/conanfile.txt \
+#     --output-folder=. \
+#     --build=missing
 
 # Installation des dépendances du projet
 RUN conan install .. \
