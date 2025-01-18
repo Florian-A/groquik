@@ -22,12 +22,11 @@ WORKDIR /app/.build
 RUN conan profile detect
 RUN conan remote add ripple http://18.143.149.228:8081/artifactory/api/conan/conan-non-prod
 
-RUN conan install /app --output-folder=. --build=missing
-RUN conan install date/3.0.1 --output-folder=. --build=missing
-#RUN conan install .. --output-folder=. --build=missing
-
-# Installation des dépendances avec Conan
-RUN conan install .. --output-folder=. --build=missing --requires=date/3.0.1
+# Installation des dépendances avec Conan (une seule commande)
+RUN conan install .. \
+    --output-folder=. \
+    --build=missing \
+    --requires=date/3.0.1
 
 # Compilation avec CMake
 RUN cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW \
