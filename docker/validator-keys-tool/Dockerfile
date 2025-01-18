@@ -22,17 +22,28 @@ WORKDIR /app/.build
 RUN conan profile detect
 RUN conan remote add ripple http://18.143.149.228:8081/artifactory/api/conan/conan-non-prod
 
-# Installation des dépendances avec Conan
-# D'abord installer la dépendance date
-RUN conan install --requires=date/3.0.1 --output-folder=. --build=missing
+# Création d'un fichier conanfile.txt temporaire pour date
+RUN echo "[requires]" > /tmp/conanfile.txt && \
+    echo "date/3.0.1" >> /tmp/conanfile.txt && \
+    echo "[generators]" >> /tmp/conanfile.txt && \
+    echo "CMakeDeps" >> /tmp/conanfile.txt && \
+    echo "CMakeToolchain" >> /tmp/conanfile.txt
 
-# Ensuite installer les dépendances du projet
-RUN conan install .. --output-folder=. --build=missing
+# Installation de date avec son propre conanfile
+RUN conan install /tmp/conanfile.txt \
+    --output-folder=. \
+    --build=missing
+
+# Installation des dépendances du projet
+RUN conan install .. \
+    --output-folder=. \
+    --build=missing
 
 # Compilation avec CMake
 RUN cmake -DCMAKE_POLICY_DEFAULT_CMP0091=NEW \
     -DCMAKE_TOOLCHAIN_FILE:FILEPATH=conan_toolchain.cmake \
     -DCMAKE_BUILD_TYPE=Release \
+    -DCMAKE_PREFIX_PATH="/root/.conan2/p" \
     ..
 
 RUN cmake --build .
