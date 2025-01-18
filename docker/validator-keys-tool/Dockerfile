@@ -6,6 +6,7 @@ RUN apt-get update && apt-get install -y \
     git \
     python3 \
     python3-pip \
+    python3-xyz \
     libboost-all-dev \
     libxxhash-dev \
     libdate-tz3
