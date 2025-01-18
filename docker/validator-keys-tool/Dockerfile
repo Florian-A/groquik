@@ -8,7 +8,7 @@ RUN apt-get update && apt-get install -y \
     python3-pip \
     libboost-all-dev \
     libxxhash-dev \
-    libdate-dev
+    libdate-tz3
 
 RUN pip3 install --upgrade pip && pip3 install conan
 
