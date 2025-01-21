@@ -1,26 +1,13 @@
 #!/bin/bash
 
-RIPPLED_DIR="/opt/ripple"
-CONFIG_DIR="/config"
-KEYS_FILE="$CONFIG_DIR/validator-keys.json"
-VALIDATORS_FILE="$CONFIG_DIR/validators.txt"
+/usr/local/bin/validator-keys create_keys
 
-$RIPPLED_DIR/bin/rippled "$@" &
-RIPPLED_PID=$!
+VALIDATOR_PUBLIC_KEY=$(validator-keys create_token | awk -F": " '/validator public key/{print $2}')
+VALIDATOR_TOKEN=$(validator-keys create_token | awk '/\[validator_token\]/{flag=1; next} flag {print; if ($0 ~ /==$/) flag=0}')
 
-sleep 2
-$RIPPLED_DIR/bin/rippled validation_create > $KEYS_FILE
-kill $RIPPLED_PID
+sed -i "/\[validators\]/a $VALIDATOR_PUBLIC_KEY" /opt/ripple/etc/validators.txt
+sed -i "/\[validator_token\]/a $VALIDATOR_TOKEN" /opt/ripple/etc/rippled.cfg
 
-VALIDATION_PUBLIC_KEY=$(jq -r '.result.validation_public_key' $KEYS_FILE)
+#exec /opt/ripple/bin/rippled "$@"
 
-echo "[validators]" > $VALIDATORS_FILE
-echo "$VALIDATION_PUBLIC_KEY" >> $VALIDATORS_FILE
-
-#exec $RIPPLED_DIR/bin/rippled "$@" --conf "$CONFIG_DIR/rippled.cfg" 
-#exec $RIPPLED_DIR/bin/rippled "$@"
-
-# waiting indefinitely
-while true; do
-  sleep 1
-done
+tail -f /dev/null

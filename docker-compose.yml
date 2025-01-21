@@ -9,15 +9,15 @@ services:
       - "8080:80"
       - "5005:5005"
     volumes:
-      - ./docker/validator1/config:/config
-      - ./docker/validator1/config/rippled.cfg:/etc/opt/ripple/rippled.cfg
+      - ./docker/validator1/config/rippled.cfg:/opt/ripple/etc/rippled.cfg
+      - ./docker/validator1/config/validators.txt:/opt/ripple/etc/validators.txt
     depends_on:
       - validator-keys-tool
     restart: unless-stopped
   validator-keys-tool:
     build:
       context: ./docker/validator-keys-tool
-    image: local-validator-keys-tool:latest  # On donne un nom à l'image
+    image: local-validator-keys-tool:latest
     container_name: validator-keys-tool
     platform: linux/amd64
     restart: unless-stopped
