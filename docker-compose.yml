@@ -10,7 +10,7 @@ services:
       - "5005:5005"
     volumes:
       - ./docker/validator1/config:/config
-      #- ./docker/validator1/config/rippled.cfg:/etc/opt/ripple/rippled.cfg
+      - ./docker/validator1/config/rippled.cfg:/etc/opt/ripple/rippled.cfg
     depends_on:
       - validator-keys-tool
     restart: unless-stopped
