@@ -5,12 +5,18 @@ services:
       context: ./docker/validator1
     container_name: validator1
     platform: linux/amd64
-    ports:
-      - "8080:80"
-      - "5005:5005"
     volumes:
-      - ./docker/validator1/config/rippled.cfg:/opt/ripple/etc/rippled.cfg
-      - ./docker/validator1/config/validators.txt:/opt/ripple/etc/validators.txt
+      - ./docker/shared/validators.txt:/opt/ripple/etc/validators.txt
+    depends_on:
+      - validator-keys-tool
+    restart: unless-stopped
+  validator2:
+    build:
+      context: ./docker/validator2
+    container_name: validator2
+    platform: linux/amd64
+    volumes:
+      - ./docker/shared/validators.txt:/opt/ripple/etc/validators.txt
     depends_on:
       - validator-keys-tool
     restart: unless-stopped
