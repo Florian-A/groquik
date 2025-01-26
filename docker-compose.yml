@@ -10,6 +10,9 @@ services:
     depends_on:
       - validator-keys-tool
     restart: unless-stopped
+    ports:
+      - "51235:51235" # Port Peer
+      - "6006:6006"   # Port WebSocket
   validator2:
     build:
       context: ./docker/validator2
