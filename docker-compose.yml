@@ -1,32 +1,39 @@
+# docker-compose.yml
 version: '3.8'
 services:
-  validator1:
-    build:
-      context: ./docker/validator1
-    container_name: validator1
-    platform: linux/amd64
-    volumes:
-      - ./docker/shared/validators.txt:/opt/ripple/etc/validators.txt
-    depends_on:
-      - validator-keys-tool
-    restart: unless-stopped
-    ports:
-      - "51235:51235" # Port Peer
-      - "6006:6006"   # Port WebSocket
-  validator2:
-    build:
-      context: ./docker/validator2
-    container_name: validator2
-    platform: linux/amd64
-    volumes:
-      - ./docker/shared/validators.txt:/opt/ripple/etc/validators.txt
-    depends_on:
-      - validator-keys-tool
-    restart: unless-stopped
   validator-keys-tool:
     build:
       context: ./docker/validator-keys-tool
     image: local-validator-keys-tool:latest
     container_name: validator-keys-tool
     platform: linux/amd64
+    restart: unless-stopped
+
+  validator1:
+    build:
+      context: ./docker/validator
+      args:
+        VALIDATOR_NAME: validator1
+    container_name: validator1
+    platform: linux/amd64
+    volumes:
+      - ./docker/validator/shared:/opt/ripple/shared
+    depends_on:
+      - validator-keys-tool
+    restart: unless-stopped
+    ports:
+      - "51235:51235"
+      - "6006:6006"
+
+  validator2:
+    build:
+      context: ./docker/validator
+      args:
+        VALIDATOR_NAME: validator2
+    container_name: validator2
+    platform: linux/amd64
+    volumes:
+      - ./docker/validator/shared:/opt/ripple/shared
+    depends_on:
+      - validator-keys-tool
     restart: unless-stopped
