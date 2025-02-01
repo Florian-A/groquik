@@ -7,7 +7,8 @@ COPY --from=local-validator-keys-tool:latest /usr/local/bin/validator-keys /usr/
 ARG VALIDATOR_NAME
 ENV VALIDATOR_NAME=${VALIDATOR_NAME}
 
-COPY config/rippled.cfg /opt/ripple/etc/rippled.cfg.template
+COPY config/rippled.cfg /opt/ripple/etc/rippled.cfg
+RUN echo "[validators]" > /etc/opt/ripple/validators.txt
 COPY scripts/init_rippled.sh /usr/local/bin/init_rippled.sh
 RUN chmod +x /usr/local/bin/init_rippled.sh
 

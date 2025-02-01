@@ -1,37 +1,34 @@
 #!/bin/bash
 
 # Check if keys already exist
-KEYS_FILE="/opt/ripple/shared/keys/${VALIDATOR_NAME}_keys.json"
-mkdir -p /opt/ripple/shared/keys
+VALIDATOR_KEYS_FILE="/root/.ripple/validator-keys.json"
+RIPPLED_CFG_FILE="/etc/opt/ripple/rippled.cfg"
+VALIDATORS_FILE="/etc/opt/ripple/validators.txt"
 
-if [ ! -f "$KEYS_FILE" ]; then
-    echo "Generating new validator keys for ${VALIDATOR_NAME}"
+if [ ! -f "$VALIDATOR_KEYS_FILE" ]; then
     /usr/local/bin/validator-keys create_keys
-    cp validator-keys.json "$KEYS_FILE"
-else
-    echo "Using existing validator keys for ${VALIDATOR_NAME}"
-    cp "$KEYS_FILE" validator-keys.json
 fi
 
-# Generate token and get public key
-VALIDATOR_DATA=$(/usr/local/bin/validator-keys create_token)
-VALIDATOR_PUBLIC_KEY=$(echo "$VALIDATOR_DATA" | awk -F": " '/validator public key/{print $2}')
-VALIDATOR_TOKEN=$(echo "$VALIDATOR_DATA" | awk '/\[validator_token\]/{flag=1; next} flag {print; if ($0 ~ /==$/) flag=0}')
+# Check if validator token already exists in rippled.cfg
+EXISTING_TOKEN=$(awk '/\[validator_token\]/{found=1} found{if (skip) print; skip=1}' $RIPPLED_CFG_FILE)
 
-# Update validators.txt if public key not already present
-if ! grep -q "$VALIDATOR_PUBLIC_KEY" /opt/ripple/shared/validators.txt; then
+EXISTING_TOKEN=$(awk '/\[validator_token\]/{getline; if ($0 != "") print $0}' $RIPPLED_CFG_FILE | awk 'NR>1')
+
+if [ -z "$EXISTING_TOKEN" ]; then
+    # No existing token found, generate new one
+    echo "No existing validator token found. Generating new token..."
+    VALIDATOR_DATA=$(/usr/local/bin/validator-keys create_token)
+    VALIDATOR_PUBLIC_KEY=$(echo "$VALIDATOR_DATA" | awk -F": " '/validator public key/{print $2}')
+    VALIDATOR_TOKEN=$(echo "$VALIDATOR_DATA" | awk '/\[validator_token\]/{flag=1; next} flag {print; if ($0 ~ /==$/) flag=0}')
+
     echo "Adding ${VALIDATOR_NAME} public key to validators.txt"
-    echo "$VALIDATOR_PUBLIC_KEY" >> /opt/ripple/shared/validators.txt
+    echo "$VALIDATOR_PUBLIC_KEY" >> $VALIDATORS_FILE
+
+    # Update rippled.cfg with validator token
+    awk -v token="$VALIDATOR_TOKEN" '/\[validator_token\]/{print;print token;next}1' $RIPPLED_CFG_FILE > tmpfile && mv tmpfile $RIPPLED_CFG_FILE
 fi
-
-# Create rippled.cfg with the correct configuration
-cp /opt/ripple/etc/rippled.cfg.template /opt/ripple/etc/rippled.cfg
-
-# Update rippled.cfg with validator token
-awk -v token="$VALIDATOR_TOKEN" '/\[validator_token\]/{print;print token;next}1' /opt/ripple/etc/rippled.cfg > tmpfile && mv tmpfile /opt/ripple/etc/rippled.cfg
-
-# Update fixed IPs configuration
-sed -i "s/\[ips_fixed\]/[ips_fixed]\nvalidator1 51235\nvalidator2 51235/" /opt/ripple/etc/rippled.cfg
 
 # Start rippled
 exec /opt/ripple/bin/rippled "$@"
+
+#while true; do sleep 3600; done

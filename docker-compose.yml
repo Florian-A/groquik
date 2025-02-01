@@ -17,7 +17,9 @@ services:
     container_name: validator1
     platform: linux/amd64
     volumes:
-      - ./docker/validator/shared:/opt/ripple/shared
+      - type: bind
+        source: ./docker/validator/shared/validators.txt
+        target: /etc/opt/ripple/validators.txt
     depends_on:
       - validator-keys-tool
     restart: unless-stopped
@@ -33,7 +35,9 @@ services:
     container_name: validator2
     platform: linux/amd64
     volumes:
-      - ./docker/validator/shared:/opt/ripple/shared
+      - type: bind
+        source: ./docker/validator/shared/validators.txt
+        target: /etc/opt/ripple/validators.txt
     depends_on:
       - validator-keys-tool
     restart: unless-stopped
