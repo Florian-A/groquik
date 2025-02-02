@@ -1,15 +1,6 @@
-FROM xrpllabsofficial/xrpld:latest
+FROM ubuntu:22.04
 
-RUN apt-get update && apt-get install -y jq
-
-COPY --from=local-validator-keys-tool:latest /usr/local/bin/validator-keys /usr/local/bin/
-
-ARG VALIDATOR_NAME
-ENV VALIDATOR_NAME=${VALIDATOR_NAME}
-
-COPY config/rippled.cfg /opt/ripple/etc/rippled.cfg
-RUN echo "[validators]" > /etc/opt/ripple/validators.txt
-COPY scripts/init_rippled.sh /usr/local/bin/init_rippled.sh
-RUN chmod +x /usr/local/bin/init_rippled.sh
+COPY scripts/reset_validators.sh /usr/local/bin/reset_validators.sh
+RUN chmod +x /usr/local/bin/reset_validators.sh
 
 ENTRYPOINT ["/usr/local/bin/init_rippled.sh"]

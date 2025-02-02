@@ -1,6 +1,13 @@
 # docker-compose.yml
 version: '3.8'
 services:
+  validators-init:
+    build:
+      context: ./docker/ubuntu
+    container_name: validators-init
+    volumes:
+      - ./docker/validator-init/validators.txt:/opt/ripple/etc/validators.txt
+
   validator-keys-tool:
     build:
       context: ./docker/validator-keys-tool
@@ -18,7 +25,7 @@ services:
     platform: linux/amd64
     volumes:
       - type: bind
-        source: ./docker/validator/shared/validators.txt
+        source: ./docker/validators-init/shared/validators.txt
         target: /etc/opt/ripple/validators.txt
     depends_on:
       - validator-keys-tool
@@ -36,7 +43,7 @@ services:
     platform: linux/amd64
     volumes:
       - type: bind
-        source: ./docker/validator/shared/validators.txt
+        source: ./docker/validators-init/shared/validators.txt
         target: /etc/opt/ripple/validators.txt
     depends_on:
       - validator-keys-tool
