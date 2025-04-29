@@ -24,8 +24,12 @@ services:
       - validator-keys-tool
     restart: unless-stopped
     ports:
-      - "51235:51235"
+      - "5006:5006"
       - "6006:6006"
+      - "51235:51235"
+
+    networks:
+      - rippled-net
 
   validator2:
     build:
@@ -41,3 +45,9 @@ services:
     depends_on:
       - validator-keys-tool
     restart: unless-stopped
+    networks:
+      - rippled-net
+
+networks:
+  rippled-net:
+    driver: bridge
